@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import Web3 from "web3";
 import { newKitFromWeb3 } from "@celo/contractkit";
 
@@ -27,7 +27,7 @@ export default function TopBar() {
   const contractState = useContractState();
   const notificationDispatch = useNotificationDispatch();
 
-  const connectCeloExtensionWallet = () => {
+  const connectCeloExtensionWallet = useCallback(() => {
     if (window.celo) {
       window.celo.enable()
         .then(async () => {
@@ -56,7 +56,7 @@ export default function TopBar() {
           });
         })
     }
-  }
+  }, [contractDispatch, notificationDispatch])
 
   useEffect(() => {
     if (window.celo) {
@@ -89,7 +89,7 @@ export default function TopBar() {
         payload: 'Please install the CeloExtensionWallet'
       });
     }
-  }, []);
+  }, [connectCeloExtensionWallet, contractDispatch, notificationDispatch]);
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);

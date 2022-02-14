@@ -9,7 +9,7 @@ import { ReactReader } from "react-reader";
 
 import { useContractState } from '../../../components/ContractProvider';
 
-export default function book() {
+export default function Book() {
   const router = useRouter();
   const routerQuery = router.query;
 
@@ -39,7 +39,7 @@ export default function book() {
       router.push('/');
     }
 
-  }, [bookIndex]);
+  }, [bookIndex, contractState.account, contractState.contract, router]);
 
   // And your own state logic to persist state
   const [location, setLocation] = useState(null)

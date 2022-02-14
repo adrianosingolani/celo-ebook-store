@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BigNumber from "bignumber.js";
+// import Image from 'next/image';
 
 import {
   Box,
@@ -20,45 +21,44 @@ export default function StoreBookList() {
   const contractDispatch = useContractDispatch();
   const notificationDispatch = useNotificationDispatch();
 
-
-  let books = [];
-
   useEffect(() => {
+    let books = [];
+
+    const getUserBooks = async function () {
+      const userBooks = await contractState.contract.methods.getUserBooks().call({ from: contractState.account });
+      setUserBookList(userBooks);
+    }
+
+    const getStoreBooks = async function () {
+      const _productsLength = await contractState.contract.methods.getBooksTotal().call()
+      const _products = []
+      for (let i = 0; i < _productsLength; i++) {
+        let _product = new Promise(async (resolve, reject) => {
+          let p = await contractState.contract.methods.getBookPublicDetails(i).call()
+          resolve({
+            index: p[0],
+            coverUrl: p[1],
+            title: p[2],
+            author: p[3],
+            price: new BigNumber(p[4]).shiftedBy(-ERC20_DECIMALS).toFixed(2),
+            sold: p[5],
+          })
+        })
+        _products.push(_product)
+      }
+
+      books = await Promise.all(_products);
+
+      setStoreBookList(books);
+    }
+
     if (contractState.contract) {
       getStoreBooks();
       getUserBooks();
     } else {
       setStoreBookList([]);
     }
-  }, [contractState.contract]);
-
-  const getUserBooks = async function () {
-    const userBooks = await contractState.contract.methods.getUserBooks().call({ from: contractState.account });
-    setUserBookList(userBooks);
-  }
-
-  const getStoreBooks = async function () {
-    const _productsLength = await contractState.contract.methods.getBooksTotal().call()
-    const _products = []
-    for (let i = 0; i < _productsLength; i++) {
-      let _product = new Promise(async (resolve, reject) => {
-        let p = await contractState.contract.methods.getBookPublicDetails(i).call()
-        resolve({
-          index: p[0],
-          coverUrl: p[1],
-          title: p[2],
-          author: p[3],
-          price: new BigNumber(p[4]).shiftedBy(-ERC20_DECIMALS).toFixed(2),
-          sold: p[5],
-        })
-      })
-      _products.push(_product)
-    }
-
-    books = await Promise.all(_products);
-
-    setStoreBookList(books);
-  }
+  }, [contractState.contract, contractState.account]);
 
   const buyBook = (index) => {
     contractState.contract.methods.buyBook(index).send({ from: contractState.account })
@@ -96,7 +96,7 @@ export default function StoreBookList() {
             <img
               src={book.coverUrl}
               alt={`${book.author} - ${book.title}`}
-              loading="lazy"
+              // loading="lazy"
               width="160"
               height="240"
             />
