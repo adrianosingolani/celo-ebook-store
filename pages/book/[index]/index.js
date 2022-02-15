@@ -22,7 +22,7 @@ export default function Book() {
 
   useEffect(() => {
     if (contractState.contract) {
-      contractState.contract.methods.getBookEpub(bookIndex).call({ from: contractState.account })
+      contractState.contract.methods.getBookEpub(bookIndex).call({ from: contractState.userAddress })
         .then(epub => {
           setEpubUrl(epub);
 
@@ -39,7 +39,7 @@ export default function Book() {
       router.push('/');
     }
 
-  }, [bookIndex, contractState.account, contractState.contract, router]);
+  }, [bookIndex, contractState.userAddress, contractState.contract, router]);
 
   // And your own state logic to persist state
   const [location, setLocation] = useState(null)

@@ -43,7 +43,7 @@ export default function TopBar() {
           contractDispatch({
             type: 'CONNECT_WALLET',
             payload: {
-              account: defaultAccount,
+              userAddress: defaultAccount,
               balance: balance,
               kit: kit
             }
@@ -119,12 +119,12 @@ export default function TopBar() {
             <Button variant="text" color="inherit" onClick={handleOpen}>Add book</Button>
           </Box>
           <Tooltip
-            title={contractState.account ? contractState.account : ''}
+            title={contractState.userAddress ? contractState.userAddress : ''}
             placement="bottom-end"
             arrow
             disableFocusListener
             disableTouchListener
-            disableHoverListener={contractState.account ? false : true}
+            disableHoverListener={contractState.userAddress ? false : true}
           >
             <Button
               size="small" variant="outlined" sx={{ ml: 1, textTransform: 'none' }}

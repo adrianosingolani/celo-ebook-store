@@ -23,7 +23,7 @@ export default function UserBookList() {
     let books = [];
 
     const getBooks = async function () {
-      const _productsList = await contractState.contract.methods.getUserBooks().call({ from: contractState.account });
+      const _productsList = await contractState.contract.methods.getUserBooks().call({ from: contractState.userAddress });
 
       const _productsLength = _productsList.length;
       const _products = []
@@ -52,7 +52,7 @@ export default function UserBookList() {
     } else {
       setBookList([]);
     }
-  }, [contractState.contract, contractState.account]);
+  }, [contractState.contract, contractState.userAddress]);
 
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 160px)', gridGap: '32px', justifyContent: 'space-between', marginTop: 2 }}>

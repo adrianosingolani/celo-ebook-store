@@ -95,7 +95,7 @@ export default function AddBook() {
         new BigNumber(values.price).shiftedBy(ERC20_DECIMALS).toString()
       ];
 
-      contractState.contract.methods.addBook(...params).send({ from: contractState.account })
+      contractState.contract.methods.addBook(...params).send({ from: contractState.userAddress })
         .then(res => {
           // setValues({
           //   epubUrl: '',

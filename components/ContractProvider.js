@@ -1,17 +1,21 @@
 import { useReducer, useContext, createContext, useEffect } from 'react';
 
 import ebookstoreAbi from '../contract/ebookstore.abi.json';
+import cUsdAbi from '../contract/erc20.abi.json';
 
-const contractAddress = "0x114528DAe4E5ac802d8E820D61029927B599405F";
+const contractAddress = "0x0F895DF825B22F5fBC75CE1397fa7434593c8466";
+const cUsdContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1";
 
 const StateContext = createContext();
 const DispatchContext = createContext();
 
 const initialState = {
-  account: null,
+  contractAddress: contractAddress,
+  userAddress: null,
   balance: null,
   kit: null,
   contract: null,
+  cUsdContract: null
 }
 
 const reducer = (state, action) => {
@@ -21,11 +25,9 @@ const reducer = (state, action) => {
         ...state,
         kit: action.payload.kit,
         balance: action.payload.balance,
-        account: action.payload.account,
+        userAddress: action.payload.userAddress,
       }
     case 'SET_BALANCE': 
-      console.log('SET_BALANCE');
-      console.log(action.payload);
       return {
         ...state,
         balance: action.payload
@@ -34,6 +36,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         contract: action.payload
+      };
+      case 'SET_CUSDCONTRACT':
+      return {
+        ...state,
+        cUsdContract: action.payload
       };
     case 'RESET_STATE':
       return initialState
@@ -52,6 +59,13 @@ const ContractProvider = ({ children }) => {
       dispatch({
         type: 'SET_CONTRACT',
         payload: contract,
+      })
+
+      const cUsdContract = new state.kit.web3.eth.Contract(cUsdAbi, cUsdContractAddress)
+
+      dispatch({
+        type: 'SET_CUSDCONTRACT',
+        payload: cUsdContract,
       })
     }
   }, [state.kit])

@@ -25,7 +25,7 @@ export default function StoreBookList() {
     let books = [];
 
     const getUserBooks = async function () {
-      const userBooks = await contractState.contract.methods.getUserBooks().call({ from: contractState.account });
+      const userBooks = await contractState.contract.methods.getUserBooks().call({ from: contractState.userAddress });
       setUserBookList(userBooks);
     }
 
@@ -58,34 +58,58 @@ export default function StoreBookList() {
     } else {
       setStoreBookList([]);
     }
-  }, [contractState.contract, contractState.account]);
+  }, [contractState.contract, contractState.userAddress]);
 
-  const buyBook = (index) => {
-    contractState.contract.methods.buyBook(index).send({ from: contractState.account })
+  const buyBook = (book) => {
+    const amount = BigNumber(book.price).shiftedBy(ERC20_DECIMALS).toString();
+
+    notificationDispatch({
+      type: 'SET_NOTIFICATION',
+      payload: 'Waiting for payment approval'
+    });
+
+    contractState.cUsdContract.methods
+      .approve(contractState.contractAddress, amount)
+      .send({ from: contractState.userAddress })
       .then(res => {
         notificationDispatch({
           type: 'SET_NOTIFICATION',
-          payload: 'You bought a new book!'
+          payload: `Awaiting payment for ${book.title}`
         });
 
-        contractState.kit.getTotalBalance(contractState.account)
-          .then((bigBalance) => {
-            const balance = bigBalance.cUSD.shiftedBy(-ERC20_DECIMALS).toFixed(2);
+        contractState.contract.methods.buyBook(book.index).send({ from: contractState.userAddress })
+          .then(res => {
+            notificationDispatch({
+              type: 'SET_NOTIFICATION',
+              payload: 'You bought a new book!'
+            });
 
-            console.log(balance);
+            getUserBooks();
 
-            contractDispatch({
-              type: 'SET_BALANCE',
-              payload: balance
+            contractState.kit.getTotalBalance(contractState.userAddress)
+              .then((bigBalance) => {
+                const balance = bigBalance.cUSD.shiftedBy(-ERC20_DECIMALS).toFixed(2);
+
+                contractDispatch({
+                  type: 'SET_BALANCE',
+                  payload: balance
+                });
+              })
+          })
+          .catch(err => {
+            notificationDispatch({
+              type: 'SET_NOTIFICATION',
+              payload: 'Something went wrong'
             });
           })
       })
       .catch(err => {
         notificationDispatch({
           type: 'SET_NOTIFICATION',
-          payload: 'Something went wrong'
+          payload: 'Not approved'
         });
       })
+
   }
 
   return (
@@ -120,7 +144,8 @@ export default function StoreBookList() {
                   size="small"
                   fullWidth
                   sx={{ lineHeight: "inherit", padding: "2px 0", marginTop: 1, textTransform: 'none' }}
-                  onClick={() => buyBook(book.index)}
+                  // onClick={() => buyBook(book.index)}
+                  onClick={() => buyBook(book)}
                   color="secondary"
                 >
                   Buy for {book.price} cUSD

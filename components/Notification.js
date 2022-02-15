@@ -33,7 +33,7 @@ export default function Notification({ children }) {
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={state.open}
-          autoHideDuration={6000}
+          autoHideDuration={12000}
           onClose={() => {
             dispatch({
               type: 'RESET_NOTIFICATION',
