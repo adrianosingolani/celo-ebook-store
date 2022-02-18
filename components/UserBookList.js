@@ -17,8 +17,6 @@ export default function UserBookList() {
 
   const contractState = useContractState();
 
-
-
   useEffect(() => {
     let books = [];
 
@@ -56,33 +54,39 @@ export default function UserBookList() {
 
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 160px)', gridGap: '32px', justifyContent: 'space-between', marginTop: 2 }}>
-      {bookList.map(book => {
-        return (
-          <Box key={book.index} sx={{ width: '160px' }}>
-            <img
-              src={book.coverUrl}
-              alt={`${book.author} - ${book.title}`}
-              // loading="lazy"
-              width="160"
-              height="240"
-            />
-            <Box title={`${book.author} - ${book.title}`}>
-              <Typography variant="subtitle1" sx={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{book.title}</Typography>
-              <Typography variant="subtitle2" sx={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{book.author}</Typography>
-              <Button
-                variant="outlined"
-                component={Link}
-                size="small"
-                fullWidth
-                sx={{ lineHeight: "inherit", padding: "2px 0", marginTop: 1, textTransform: 'none' }}
-                href={`/book/${book.index}`}
-              >
-                Read book
-              </Button>
-            </Box>
-          </Box>
+      {
+        bookList.length > 0 ? (
+          bookList.map(book => {
+            return (
+              <Box key={book.index} sx={{ width: '160px' }}>
+                <img
+                  src={book.coverUrl}
+                  alt={`${book.author} - ${book.title}`}
+                  // loading="lazy"
+                  width="160"
+                  height="240"
+                />
+                <Box title={`${book.author} - ${book.title}`}>
+                  <Typography variant="subtitle1" sx={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{book.title}</Typography>
+                  <Typography variant="subtitle2" sx={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{book.author}</Typography>
+                  <Button
+                    variant="outlined"
+                    component={Link}
+                    size="small"
+                    fullWidth
+                    sx={{ lineHeight: "inherit", padding: "2px 0", marginTop: 1, textTransform: 'none' }}
+                    href={`/book/${book.index}`}
+                  >
+                    Read book
+                  </Button>
+                </Box>
+              </Box>
+            )
+          })
+        ) : (
+          <Typography variant="subtitle1">You don't have any books yet.</Typography>
         )
-      })}
+      }
     </Box>
   )
 }

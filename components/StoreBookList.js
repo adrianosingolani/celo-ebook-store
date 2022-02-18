@@ -21,37 +21,37 @@ export default function StoreBookList() {
   const contractDispatch = useContractDispatch();
   const notificationDispatch = useNotificationDispatch();
 
-  useEffect(() => {
-    let books = [];
+  let books = [];
 
-    const getUserBooks = async function () {
-      const userBooks = await contractState.contract.methods.getUserBooks().call({ from: contractState.userAddress });
-      setUserBookList(userBooks);
-    }
+  const getUserBooks = async function () {
+    const userBooks = await contractState.contract.methods.getUserBooks().call({ from: contractState.userAddress });
+    setUserBookList(userBooks);
+  }
 
-    const getStoreBooks = async function () {
-      const _productsLength = await contractState.contract.methods.getBooksTotal().call()
-      const _products = []
-      for (let i = 0; i < _productsLength; i++) {
-        let _product = new Promise(async (resolve, reject) => {
-          let p = await contractState.contract.methods.getBookPublicDetails(i).call()
-          resolve({
-            index: p[0],
-            coverUrl: p[1],
-            title: p[2],
-            author: p[3],
-            price: new BigNumber(p[4]).shiftedBy(-ERC20_DECIMALS).toFixed(2),
-            sold: p[5],
-          })
+  const getStoreBooks = async function () {
+    const _productsLength = await contractState.contract.methods.getBooksTotal().call()
+    const _products = []
+    for (let i = 0; i < _productsLength; i++) {
+      let _product = new Promise(async (resolve, reject) => {
+        let p = await contractState.contract.methods.getBookPublicDetails(i).call()
+        resolve({
+          index: p[0],
+          coverUrl: p[1],
+          title: p[2],
+          author: p[3],
+          price: new BigNumber(p[4]).shiftedBy(-ERC20_DECIMALS).toFixed(2),
+          sold: p[5],
         })
-        _products.push(_product)
-      }
-
-      books = await Promise.all(_products);
-
-      setStoreBookList(books);
+      })
+      _products.push(_product)
     }
 
+    books = await Promise.all(_products);
+
+    setStoreBookList(books);
+  }
+
+  useEffect(() => {
     if (contractState.contract) {
       getStoreBooks();
       getUserBooks();
@@ -76,6 +76,7 @@ export default function StoreBookList() {
           type: 'SET_NOTIFICATION',
           payload: `Awaiting payment for ${book.title}`
         });
+
 
         contractState.contract.methods.buyBook(book.index).send({ from: contractState.userAddress })
           .then(res => {

@@ -33,11 +33,14 @@ export default function Notification({ children }) {
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={state.open}
-          autoHideDuration={12000}
-          onClose={() => {
-            dispatch({
-              type: 'RESET_NOTIFICATION',
-            })
+          // autoHideDuration={6000}
+          onClose={(event, reason) => {            
+            if (reason !== 'clickaway') {
+              dispatch({
+                type: 'RESET_NOTIFICATION',
+              })
+            }
+            
           }}
           message={state.message}
           action={
