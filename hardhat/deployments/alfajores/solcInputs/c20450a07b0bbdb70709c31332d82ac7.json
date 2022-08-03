@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/EbookStore.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n\npragma solidity >=0.7.0 <0.9.0;\n\ninterface IERC20Token {\n    function transfer(address, uint256) external returns (bool);\n\n    function approve(address, uint256) external returns (bool);\n\n    function transferFrom(\n        address,\n        address,\n        uint256\n    ) external returns (bool);\n\n    function totalSupply() external view returns (uint256);\n\n    function balanceOf(address) external view returns (uint256);\n\n    function allowance(address, address) external view returns (uint256);\n\n    event Transfer(address indexed from, address indexed to, uint256 value);\n    event Approval(\n        address indexed owner,\n        address indexed spender,\n        uint256 value\n    );\n}\n\ncontract EbookStore {\n    address payable contractOwner;\n\n    uint256 internal booksTotal = 0;\n\n    address internal cUsdTokenAddress =\n        0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;\n\n    constructor() {\n        // set the contract owner when deploying the contract\n        contractOwner = payable(msg.sender);\n    }\n\n    struct Book {\n        string epubUrl;\n        string coverUrl;\n        string title;\n        string author;\n        uint256 price;\n        uint256 sold;\n    }\n\n    // map all books\n    mapping(uint256 => Book) internal books;\n\n    // map books to user address\n    mapping(address => mapping(uint256 => bool)) internal userBooks;\n\n    // list of all books of an user\n    mapping(address => uint256[]) internal userBookList;\n\n    // add a book only if the sender is the contract owner\n    function addBook(\n        string memory _epubUrl,\n        string memory _coverUrl,\n        string memory _title,\n        string memory _author,\n        uint256 _price\n    ) public {\n        require(msg.sender == contractOwner, \"Not contract owner\");\n\n        uint256 _sold = 0;\n        books[booksTotal] = Book(\n            _epubUrl,\n            _coverUrl,\n            _title,\n            _author,\n            _price,\n            _sold\n        );\n        booksTotal++;\n    }\n\n    error errorTest(address caller, string msg);\n\n    function buyBook(uint256 _index) public payable {\n        require(\n            IERC20Token(cUsdTokenAddress).transferFrom(\n                msg.sender,\n                contractOwner,\n                books[_index].price\n            ),\n            \"Transfer failed\"\n        );\n\n        require(_index < booksTotal, \"Book not available\");\n\n        require(userBooks[msg.sender][_index] != true, \"Already owns the book\");\n\n        // require(\n        //     msg.sender != contractOwner,\n        //     \"Contract owner can not buy books\"\n        // );\n\n        if (msg.sender == contractOwner) {\n            revert errorTest(msg.sender, \"Teste\");\n        }\n\n        // increase number of sells for the book\n        books[_index].sold++;\n\n        // set user as owner of the book\n        userBooks[msg.sender][_index] = true;\n\n        // add book to user list\n        userBookList[msg.sender].push(_index);\n    }\n\n    function getBooksTotal() public view returns (uint256) {\n        return (booksTotal);\n    }\n\n    function getBookPublicDetails(uint256 _index)\n        public\n        view\n        returns (\n            uint256,\n            string memory,\n            string memory,\n            string memory,\n            uint256,\n            uint256\n        )\n    {\n        return (\n            _index,\n            books[_index].coverUrl,\n            books[_index].title,\n            books[_index].author,\n            books[_index].price,\n            books[_index].sold\n        );\n    }\n\n    function getUserBooks() public view returns (uint256[] memory) {\n        return (userBookList[msg.sender]);\n    }\n\n    function getBookEpub(uint256 _index) public view returns (string memory) {\n        require(\n            msg.sender == contractOwner ||\n                userBooks[msg.sender][_index] == true,\n            \"Not contract owner or book owner\"\n        );\n\n        return (books[_index].epubUrl);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
