@@ -17,16 +17,12 @@
     "@mui/material": "^5.2.5",
     "bignumber.js": "^9.0.2",
     "formik": "^2.2.9",
-    "yup": "^0.32.11",
-    "next": "12.0.7",
+    "next": "^12.1.4",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-reader": "^0.20.4",
     "web3": "^1.6.1",
-    "xhr2": "^0.2.1"
-  },
-  "devDependencies": {
-    "eslint": "8.5.0",
-    "eslint-config-next": "12.0.7"
+    "xhr2": "^0.2.1",
+    "yup": "^0.32.11"
   }
 }

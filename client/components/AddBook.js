@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Book from 'epubjs/lib/book';
@@ -17,6 +17,9 @@ import {
 global.XMLHttpRequest = require('xhr2');
 
 export default function AddBook() {
+  const [submitLabel, setSubmitLabel] = useState("Submit");
+  const [submitDisabled, setSubmitDisabled] = useState(false);
+
   const CheckEpubButton = () => {
     return (
       <Button
@@ -87,6 +90,9 @@ export default function AddBook() {
     },
     validationSchema: validationSchema,
     onSubmit: async (values, { setValues, resetForm }) => {
+      setSubmitLabel("Submiting...");
+      setSubmitDisabled(true);
+      
       const params = [
         values.epubUrl,
         values.coverUrl,
@@ -97,25 +103,24 @@ export default function AddBook() {
 
       contractState.contract.methods.addBook(...params).send({ from: contractState.userAddress })
         .then(res => {
-          // setValues({
-          //   epubUrl: '',
-          //   coverUrl: '',
-          //   title: '',
-          //   author: '',
-          //   price: 1,
-          // });
           resetForm();
 
           notificationDispatch({
             type: 'SET_NOTIFICATION',
             payload: 'Book added successfully'
-          });          
+          });
+          
+          setSubmitLabel("Submit");
+          setSubmitDisabled(false);
         })
-        .catch(err => {
+        .catch(err => {          
           notificationDispatch({
             type: 'SET_NOTIFICATION',
             payload: 'Only the contract owner can add books'
           });
+
+          setSubmitLabel("Submit");
+          setSubmitDisabled(false);
         })
     }
   });
@@ -187,8 +192,9 @@ export default function AddBook() {
             type="submit"
             variant="contained"
             color="primary"
+            disabled={submitDisabled}
           >
-            Submit
+            { submitLabel }
           </Button>
         </Box>
       </form>

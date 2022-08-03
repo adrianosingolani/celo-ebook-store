@@ -1,9 +1,12 @@
 import { useReducer, useContext, createContext, useEffect } from 'react';
 
-import ebookstoreAbi from '../contract/ebookstore.abi.json';
-import cUsdAbi from '../contract/erc20.abi.json';
+import contractData from '../../hardhat/deployments/alfajores/EbookStore.json';
+import cUsdData from '../../hardhat/artifacts/contracts/EbookStore.sol/IERC20Token.json';
 
-const contractAddress = "0x0F895DF825B22F5fBC75CE1397fa7434593c8466";
+const contractAbi = contractData.abi;
+const cUsdAbi = cUsdData.abi;
+
+const contractAddress = contractData.address;
 const cUsdContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1";
 
 const StateContext = createContext();
@@ -54,7 +57,7 @@ const ContractProvider = ({ children }) => {
 
   useEffect(() => {
     if (state.kit) {
-      const contract = new state.kit.web3.eth.Contract(ebookstoreAbi, contractAddress);
+      const contract = new state.kit.web3.eth.Contract(contractAbi, contractAddress);
 
       dispatch({
         type: 'SET_CONTRACT',

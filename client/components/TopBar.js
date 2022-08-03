@@ -112,7 +112,7 @@ export default function TopBar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{ mb: 2 }}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>Celo eBook Store</Typography>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontSize: '1.5rem' }}>Celo eBook Store</Typography>
           <Box component="nav">
             <Button component={Link} color="inherit" href="/">Store</Button>
             <Button component={Link} color="inherit" href="/library">Library</Button>
@@ -127,7 +127,7 @@ export default function TopBar() {
             disableHoverListener={contractState.userAddress ? false : true}
           >
             <Button
-              size="small" variant="outlined" sx={{ ml: 1, textTransform: 'none' }}
+              variant="contained" sx={{ ml: 1, textTransform: 'none' }}
               onClick={connectCeloExtensionWallet}
               endIcon={<WalletIcon />}
             >

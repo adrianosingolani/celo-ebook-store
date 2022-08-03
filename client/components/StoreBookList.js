@@ -77,7 +77,6 @@ export default function StoreBookList() {
           payload: `Awaiting payment for ${book.title}`
         });
 
-
         contractState.contract.methods.buyBook(book.index).send({ from: contractState.userAddress })
           .then(res => {
             notificationDispatch({
@@ -130,9 +129,8 @@ export default function StoreBookList() {
               <Typography variant="subtitle2" sx={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{book.author}</Typography>
               {userBookList.includes(book.index) ? (
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   component={Link}
-                  size="small"
                   fullWidth
                   sx={{ lineHeight: "inherit", padding: "2px 0", marginTop: 1, textTransform: 'none' }}
                   href={`/book/${book.index}`}
@@ -141,8 +139,7 @@ export default function StoreBookList() {
                 </Button>
               ) : (
                 <Button
-                  variant="outlined"
-                  size="small"
+                  variant="contained"
                   fullWidth
                   sx={{ lineHeight: "inherit", padding: "2px 0", marginTop: 1, textTransform: 'none' }}
                   // onClick={() => buyBook(book.index)}
